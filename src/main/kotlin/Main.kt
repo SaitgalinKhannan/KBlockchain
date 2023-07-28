@@ -1,4 +1,5 @@
 import java.security.MessageDigest
+import kotlin.concurrent.Volatile
 import kotlin.concurrent.thread
 import kotlin.random.Random
 
@@ -30,8 +31,17 @@ data class Block(
 class Blockchain {
     private var id: Long = 0L
     private val blocks: MutableList<Block> = mutableListOf()
+    private val messages: MutableList<String> = mutableListOf()
     private var previousBlockHash: String = "0"
+
+    @Volatile
     private var n: Int = 0
+
+    @Suppress("Unused")
+    @Synchronized
+    fun addMessage(message: String) {
+        messages.add(message)
+    }
 
     fun addBlock(creatorId: Long) {
         var magicNumber = Random.nextLong()
@@ -47,13 +57,13 @@ class Blockchain {
         generatingTime = (timeStamp() - generatingTime) / 1000
 
         synchronized(this) {
-            nStatus = if (generatingTime < 15) {
+            nStatus = if (generatingTime < 60.0) {
                 n++
                 "N was increased to $n"
-            } else if (generatingTime >= 15) {
+            } else if (generatingTime >= 60.0) {
                 n--
                 "N was decreased by 1"
-            } else if (generatingTime + 1 >= 15) {
+            } else if (generatingTime + 1.0 >= 15.0) {
                 "N stays the same"
             } else {
                 "N stays the same"
@@ -122,12 +132,32 @@ fun main() {
     val mainer5 = thread {
         blockchain.addBlock(5)
     }
+    val mainer6 = thread {
+        blockchain.addBlock(6)
+    }
+    val mainer7 = thread {
+        blockchain.addBlock(7)
+    }
+    val mainer8 = thread {
+        blockchain.addBlock(8)
+    }
+    val mainer9 = thread {
+        blockchain.addBlock(9)
+    }
+    val mainer10 = thread {
+        blockchain.addBlock(10)
+    }
 
     mainer1.join()
     mainer2.join()
     mainer3.join()
     mainer4.join()
     mainer5.join()
+    mainer6.join()
+    mainer7.join()
+    mainer8.join()
+    mainer9.join()
+    mainer10.join()
 
     blockchain.showBlockchain()
 
