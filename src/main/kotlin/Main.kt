@@ -57,10 +57,10 @@ class Blockchain {
         generatingTime = (timeStamp() - generatingTime) / 1000
 
         synchronized(this) {
-            nStatus = if (generatingTime < 60.0) {
+            nStatus = if (generatingTime < 15.0) {
                 n++
                 "N was increased to $n"
-            } else if (generatingTime >= 60.0) {
+            } else if (generatingTime >= 15.0) {
                 n--
                 "N was decreased by 1"
             } else if (generatingTime + 1.0 >= 15.0) {
