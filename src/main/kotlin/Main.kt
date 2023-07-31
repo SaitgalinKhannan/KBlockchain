@@ -48,7 +48,7 @@ class Blockchain {
         var hash: String
         var nStatus: String
         var generatingTime = timeStamp()
-        var currentN = n
+        val currentN = n
 
 
         do {
