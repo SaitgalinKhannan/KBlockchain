@@ -33,7 +33,6 @@ class Blockchain {
     private val blocks: MutableList<Block> = mutableListOf()
     private val messages: MutableList<String> = mutableListOf()
     private var previousBlockHash: String = "0"
-
     @Volatile
     private var n: Int = 0
 
@@ -50,7 +49,6 @@ class Blockchain {
         var generatingTime = timeStamp()
         val currentN = n
 
-
         do {
             hash = applySha256(magicNumber.toString())
             magicNumber = Random.nextLong()
@@ -60,13 +58,13 @@ class Blockchain {
 
         synchronized(this) {
             if (currentN == n) {
-                nStatus = if (generatingTime < 15.0) {
+                nStatus = if (generatingTime < 15) {
                     n++
                     "N was increased to $n"
-                } else if (generatingTime >= 15.0) {
+                } else if (generatingTime >= 15) {
                     n--
                     "N was decreased by 1"
-                } else if (generatingTime + 1.0 >= 15.0) {
+                } else if (generatingTime + 1 >= 15) {
                     "N stays the same"
                 } else {
                     "N stays the same"
@@ -88,6 +86,7 @@ class Blockchain {
                 previousBlockHash = hash
 
                 println(blocks.last())
+                println(generatingTime)
             }
         }
     }
