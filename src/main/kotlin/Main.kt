@@ -48,6 +48,8 @@ class Blockchain {
         var hash: String
         var nStatus: String
         var generatingTime = timeStamp()
+        var currentN = n
+
 
         do {
             hash = applySha256(magicNumber.toString())
@@ -57,32 +59,36 @@ class Blockchain {
         generatingTime = (timeStamp() - generatingTime) / 1000
 
         synchronized(this) {
-            nStatus = if (generatingTime < 15.0) {
-                n++
-                "N was increased to $n"
-            } else if (generatingTime >= 15.0) {
-                n--
-                "N was decreased by 1"
-            } else if (generatingTime + 1.0 >= 15.0) {
-                "N stays the same"
-            } else {
-                "N stays the same"
-            }
+            if (currentN == n) {
+                nStatus = if (generatingTime < 15.0) {
+                    n++
+                    "N was increased to $n"
+                } else if (generatingTime >= 15.0) {
+                    n--
+                    "N was decreased by 1"
+                } else if (generatingTime + 1.0 >= 15.0) {
+                    "N stays the same"
+                } else {
+                    "N stays the same"
+                }
 
-            blocks.add(
-                Block(
-                    id = id,
-                    creatorId = creatorId,
-                    creationTimes = timeStamp(),
-                    magicNumber = magicNumber,
-                    hash = hash,
-                    previousBlockHash = previousBlockHash,
-                    generatingTime = generatingTime,
-                    n = nStatus
+                blocks.add(
+                    Block(
+                        id = id,
+                        creatorId = creatorId,
+                        creationTimes = timeStamp(),
+                        magicNumber = magicNumber,
+                        hash = hash,
+                        previousBlockHash = previousBlockHash,
+                        generatingTime = generatingTime,
+                        n = nStatus
+                    )
                 )
-            )
-            id++
-            previousBlockHash = hash
+                id++
+                previousBlockHash = hash
+
+                println(blocks.last())
+            }
         }
     }
 
@@ -114,52 +120,26 @@ class Blockchain {
     }
 }
 
+fun mining(blockchain: Blockchain, minerId: Long) {
+    while (true) {
+        blockchain.addBlock(minerId)
+    }
+}
+
 fun main() {
     val blockchain = Blockchain()
+    val miners = mutableListOf<Thread>()
 
-    val mainer1 = thread {
-        blockchain.addBlock(1)
-    }
-    val mainer2 = thread {
-        blockchain.addBlock(2)
-    }
-    val mainer3 = thread {
-        blockchain.addBlock(3)
-    }
-    val mainer4 = thread {
-        blockchain.addBlock(4)
-    }
-    val mainer5 = thread {
-        blockchain.addBlock(5)
-    }
-    val mainer6 = thread {
-        blockchain.addBlock(6)
-    }
-    val mainer7 = thread {
-        blockchain.addBlock(7)
-    }
-    val mainer8 = thread {
-        blockchain.addBlock(8)
-    }
-    val mainer9 = thread {
-        blockchain.addBlock(9)
-    }
-    val mainer10 = thread {
-        blockchain.addBlock(10)
+    for (i in 0..<10) {
+        miners.add(thread {
+            mining(blockchain, i.toLong())
+        })
     }
 
-    mainer1.join()
-    mainer2.join()
-    mainer3.join()
-    mainer4.join()
-    mainer5.join()
-    mainer6.join()
-    mainer7.join()
-    mainer8.join()
-    mainer9.join()
-    mainer10.join()
+    miners.forEach {
+        it.join()
+    }
 
     blockchain.showBlockchain()
-
     println(blockchain.validate())
 }
