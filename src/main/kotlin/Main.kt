@@ -33,6 +33,7 @@ class Blockchain {
     private val blocks: MutableList<Block> = mutableListOf()
     private val messages: MutableList<String> = mutableListOf()
     private var previousBlockHash: String = "0"
+
     @Volatile
     private var n: Int = 0
 
@@ -57,37 +58,37 @@ class Blockchain {
         generatingTime = (timeStamp() - generatingTime) / 1000
 
         synchronized(this) {
-            if (currentN == n) {
-                nStatus = if (generatingTime < 15) {
-                    n++
-                    "N was increased to $n"
-                } else if (generatingTime >= 15) {
-                    n--
-                    "N was decreased by 1"
-                } else if (generatingTime + 1 >= 15) {
-                    "N stays the same"
-                } else {
-                    "N stays the same"
-                }
-
-                blocks.add(
-                    Block(
-                        id = id,
-                        creatorId = creatorId,
-                        creationTimes = timeStamp(),
-                        magicNumber = magicNumber,
-                        hash = hash,
-                        previousBlockHash = previousBlockHash,
-                        generatingTime = generatingTime,
-                        n = nStatus
-                    )
-                )
-                id++
-                previousBlockHash = hash
-
-                println(blocks.last())
-                println(generatingTime)
+            if (currentN != n)
+                return
+            @Suppress("KotlinConstantConditions")
+            nStatus = if (generatingTime < 15) {
+                n++
+                "N was increased to $n"
+            } else if (generatingTime >= 15) {
+                n--
+                "N was decreased by 1"
+            } else if (generatingTime + 1 >= 15) {
+                "N stays the same"
+            } else {
+                "N stays the same"
             }
+
+            blocks.add(
+                Block(
+                    id = id,
+                    creatorId = creatorId,
+                    creationTimes = timeStamp(),
+                    magicNumber = magicNumber,
+                    hash = hash,
+                    previousBlockHash = previousBlockHash,
+                    generatingTime = generatingTime,
+                    n = nStatus
+                )
+            )
+            id++
+            previousBlockHash = hash
+
+            println(blocks.last())
         }
     }
 
