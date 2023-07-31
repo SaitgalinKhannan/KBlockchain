@@ -1,7 +1,7 @@
-import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.*
 
 class Messages {
-    private val messages = ConcurrentLinkedQueue<String>()
+    private var messages = Collections.synchronizedList(mutableListOf<String>())
 
     @Synchronized
     fun addMessage(message: String) {
@@ -10,6 +10,14 @@ class Messages {
 
     fun removeAll(messagesToRemove: Messages) {
         messages.removeAll(messagesToRemove.messages)
+    }
+
+    fun copyOfMessages(): Messages {
+        val list = Collections.synchronizedList(mutableListOf<String>())
+        list.addAll(messages)
+        val copyOfMessages = Messages()
+        copyOfMessages.messages = list
+        return copyOfMessages
     }
 
     override fun toString(): String {

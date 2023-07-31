@@ -53,7 +53,7 @@ class Blockchain {
                     creationTimes = timeStamp(),
                     magicNumber = magicNumber,
                     hash = hash,
-                    messages = localMessages,
+                    messages = localMessages.copyOfMessages(),
                     previousBlockHash = previousBlockHash,
                     generatingTime = generatingTime,
                     n = nStatus
